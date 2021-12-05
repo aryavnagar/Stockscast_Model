@@ -4,6 +4,7 @@ import numpy as np
 from statsmodels.tsa.ar_model import AutoReg
 import math
 import random
+from datetime import date
 
 #forecast length
 n_days = 365
@@ -12,7 +13,8 @@ n_days = 365
 random.seed(10)
 
 # call data from Yahoo Finance
-# data=yf.download('AAPL', start='2019-1-2')
+data=yf.download('AAPL', start='2019-1-2')
+data
 # data=yf.download('ZM')
 # data=yf.download('AMZN', start='2019-1-2')
 # data=yf.download('KHC',start='2019-1-2')
@@ -23,6 +25,7 @@ data.reset_index(inplace=True,drop=False)
 # plt.plot(data['Close'])
 data['Stock_return'] = data['Close'].pct_change()
 data = data.dropna()
+print(data)
 df = data[['Stock_return','Date']]
 # plt.plot(df['Stock_return'])
 df_train = df
@@ -52,3 +55,27 @@ final = (array + 1).cumprod()
 plt.figure(figsize=(40, 30))
 plt.plot(final[:len(final)])
 plt.plot(final[0:len(final)-365])
+
+
+#getting data for database
+raw_forecast = (final[-365:])
+
+num_final = final[0]
+num_initial = data['Close'].iloc[0]
+constant = (num_initial/num_final)
+
+preds = raw_forecast * constant
+preds = [round(num, 2) for num in preds]
+
+maximum = preds.index(np.max(preds))
+minimum = preds.index(np.min(preds))
+
+today = date.today()
+current_date = today.strftime("%Y-%m-%d")
+current = yf.download('AAPL', start='2021-12-3')
+current = current['Close'].values.tolist()
+current = current[0]
+current = math.ceil(current * 100) / 100
+
+
+
