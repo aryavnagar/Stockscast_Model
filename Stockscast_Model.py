@@ -13,16 +13,21 @@ n_days = 365
 random.seed(10)
 
 # call data from Yahoo Finance
-data=yf.download('AAPL', start='2019-1-2')
-data
+# data=yf.download('AAPL', start='2018-1-2')
 # data=yf.download('ZM')
-# data=yf.download('AMZN', start='2019-1-2')
-# data=yf.download('KHC',start='2019-1-2')
-# data=yf.download('FB',start='2019-1-2')
+# data=yf.download('AMZN', start='2018-1-2')
+# data=yf.download('KHC',start='2018-1-2')
+# data=yf.download('FB',start='2018-1-2')
+# data=yf.download('NFLX', start='2018-1-2')
+# data=yf.download('COST',start='2018-1-2')
+# data=yf.download('UBER')
+# data=yf.download('BA', start='2018-1-2')
+# data=yf.download('^IXIC', start='2018-1-2')
+# data=yf.download('TSLA', start='2019-1-2')
 
 #data restructure
 data.reset_index(inplace=True,drop=False)
-# plt.plot(data['Close'])
+plt.plot(data['Close'])
 data['Stock_return'] = data['Close'].pct_change()
 data = data.dropna()
 print(data)
