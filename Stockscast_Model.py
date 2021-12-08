@@ -7,29 +7,34 @@ import random
 from datetime import date
 
 #forecast length
-n_days = 900
+n_days = 365
 
 # set seed for Reproducibility
 random.seed(10)
 
 # call data from Yahoo Finance
-# data=yf.download('AAPL', start='2018-1-2') lags=380, len(array)-365
-# data=yf.download('ZM') lags = 300, len(areray)-300
-# data=yf.download('AMZN', start='2018-1-2') lags 400, len(arry)-300
-# data=yf.download('KHC') lags =500 len(array)-300
-# data=yf.download('FB',start='2000-1-2') 600 lags
-# data=yf.download('NFLX', start='2018-1-2') 400 lags
-# data=yf.download('COST',start='2000-1-2') 600 lags
-# data=yf.download('BA', start='2000-1-2') 600 lags
-# data=yf.download('^IXIC', start='2000-1-2') 600 lags
+
+
 # data=yf.download('UBER') lags=250, len(array)-300
-# data=yf.download('QCOM', start='2000-1-2') lags=600, len(array)
-# data=yf.download('MSFT',start='2015-1-1') lags=550, len(array)-1
-# data=yf.download('NVDA', start='2000-1-2') lags=400
-# data=yf.download('INTC', start='2000-1-2') lags=400
-# data=yf.download('NYA', start='2000-1-2') lags=600
+# data=yf.download('ZM') lags = 300, len(areray)-300
+# data=yf.download('COST',start='2018-1-2') 600 lags
 
-
+# data=yf.download('AAPL', start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('AMZN', start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('KHC') lags=400 ,len(array)-120
+# data=yf.download('FB',start='2018-1-2')  lags=380, len(array)-365
+# data=yf.download('NFLX', start='2018-1-2')  lags=380, len(array)-365
+# data=yf.download('BA', start='2000-1-2') lags=400 ,len(array)-120
+# data=yf.download('^IXIC', start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('QCOM', start='2000-1-2') lags=400 ,len(array)-120
+# data=yf.download('MSFT',start='2018-1-1') lags=380, len(array)-365
+# data=yf.download('NVDA', start='2000-1-2') lags=400 ,len(array)-120
+# data=yf.download('INTC', start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('NYA', start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('^DJI', start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('JPM', start='2000-1-2') lags=400 ,len(array)-120
+# data=yf.download('F',start='2018-1-2') lags=380, len(array)-365
+# data=yf.download('GOOGL',start='2018-1-2') lags=380, len(array)-365
 
 #data restructure
 data.reset_index(inplace=True,drop=False)
@@ -46,14 +51,15 @@ array = df_train['Stock_return'].to_numpy()
 x=0
 num = math.floor((len(df_train)/2)-1)
 while(x < n_days + 1):
-    model = AutoReg(array, lags=600)
+    model = AutoReg(array, lags=400)
     model_fit = model.fit()
-    yhat = model_fit.predict(len(array), len(array))
+    yhat = model_fit.predict(len(array)-120, len(array)-120)
     print(yhat)
     array = np.append(array,yhat)
     print(x)
     array = array[~np.isnan(array)]
     x = x+1
+
 
 #plotting results
 plt.plot(array)
