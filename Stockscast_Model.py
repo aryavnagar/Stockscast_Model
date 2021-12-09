@@ -2,6 +2,7 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import numpy as np
 from statsmodels.tsa.ar_model import AutoReg
+from statsmodels.tsa.arima.model import ARIMA
 import random
 import math
 from datetime import date
@@ -12,26 +13,27 @@ n_days = 365
 random.seed(10)
 
 # call data from Yahoo Finance
-# data=yf.download('QCOM', start='2000-1-2') 500lags
-# data=yf.download('NVDA', start='2000-1-2') 500lags
-# data=yf.download('INTC', start='2000-1-2') 500lags
-# data=yf.download('NYA', start='2000-1-2') 500 lags
-# data=yf.download('^DJI', start='2000-1-2') 500lags
-# data=yf.download('JPM', start='2000-1-2') 500lags
-# data=yf.download('F',start='2000-1-2') 500 lags
-# data=yf.download('GOOGL',start='2000-1-2') 500 lags
-# data=yf.download('BA', start='2000-1-2') 500lags
-data=yf.download('KHC')
-# data=yf.download('AAPL', start='2015-1-2') 550
-# data=yf.download('FB',start='2000-1-2') 550
-# data=yf.download('NFLX',start='2018-1-2') 380
-# data=yf.download('^IXIC', start='2018-1-2') 380
-# data=yf.download('COST',start='2015-1-2') 550
-# data=yf.download('UBER') 270
-# data=yf.download('ZM')
-# data=yf.download('MSFT', start='2000-1-2') 550
-# data=yf.download('AMZN', start='2015-10-1') 380
+# data=yf.download('QCOM', start='2000-1-2')
+# data=yf.download('INTC', start='2000-1-2')
+# data=yf.download('NYA', start='2000-1-2')
+# data=yf.download('^DJI', start='2000-1-2')
+# data=yf.download('JPM', start='2015-1-2')
+# data=yf.download('F',start='2018-1-2')
+# data=yf.download('GOOGL',start='2000-1-2')
+# data=yf.download('BA', start='2015-1-2')
+# data=yf.download('KHC')
+# data=yf.download('AAPL', start='2015-1-2')
+# data=yf.download('FB',start='2000-1-2')
+# data=yf.download('NFLX',start='2018-1-2')
+# data=yf.download('^IXIC', start='2015-1-2')
+# data=yf.download('COST',start='2018-1-2')
+# data=yf.download('UBER')
+# data=yf.download('MSFT', start='2015-1-2')
+# data=yf.download('AMZN', start='2018-10-1')
+
+# data=yf.download('ZM') lags=300
 # data=yf.download('TSLA') lags=580, len(array)-1500
+# data=yf.download('NVDA', start='2000-1-2')
 
 #data restructure
 data.reset_index(inplace=True,drop=False)
@@ -43,29 +45,15 @@ df = data[['Stock_return','Date']]
 df_train = df
 array = df_train['Stock_return'].to_numpy()
 len(array)
+# print(array)
 # plt.plot(array)
 
 # model training
+lags = int(len(array) * 0.3)
 model = AutoReg(array, lags=500)
 model_fit = model.fit()
 yhat = model_fit.predict(len(array)-n_days, len(array))
 array = np.append(array,yhat)
-
-# x=0
-# y=0
-# while(x < n_days + 1):
-#     model = AutoReg(array, lags=300)
-#     model_fit = model.fit()
-#     yhat = model_fit.predict(len(array)-365, len(array)-365)
-#     print(yhat)
-#     array = np.append(array,yhat)
-#     print(x)
-#     array = array[~np.isnan(array)]
-#     x = x+1
-#     y = y+1
-
-
-
 
 #plotting results
 plt.plot(array)
