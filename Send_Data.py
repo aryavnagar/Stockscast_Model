@@ -4,25 +4,29 @@ from statsmodels.tsa.ar_model import AutoReg
 import random
 import math
 from datetime import date
+from datetime import datetime, timedelta
 import json
 from numpy import array
 import requests
 import dateutil.parser as dp
 import matplotlib.pyplot as plt
-plt.ioff()
 from random import randint
+import pandas as pd
 
 # which folder to send forecast data
 folder_path = r"C:\Users\aryav\Desktop\Github\Stockscast Model\1 year forecast examples/"
 
 #forecast length
-n_days = 365 - 1
+n_days = 260 - 1
 
 # set seed for Reproducibility
 random.seed(10)
 
+stock_list = []
+stock_name_list = []
+
 # call data from Yahoo Finance
-Qualcom=yf.download('QCOM', start='2000-1-2', actions=False)
+Qualcomm=yf.download('QCOM', start='2000-1-2', actions=False)
 Intel=yf.download('INTC', start='2000-1-2', actions=False)
 NYSE=yf.download('NYA', start='2000-1-2', actions=False)
 DowJones=yf.download('^DJI', start='2000-1-2', actions=False)
@@ -32,7 +36,7 @@ Google=yf.download('GOOGL',start='2000-1-2', actions=False)
 Boeing=yf.download('BA', start='2015-1-2', actions=False)
 Heinz=yf.download('KHC', actions=False)
 Apple=yf.download('AAPL', start='2015-1-2', actions=False)
-Facebook=yf.download('FB',start='2000-1-2', actions=False)
+Meta=yf.download('FB',start='2000-1-2', actions=False)
 Netflix=yf.download('NFLX',start='2018-1-2', actions=False)
 Nasdaq=yf.download('^IXIC', start='2015-1-2', actions=False)
 Costco=yf.download('COST',start='2018-1-2', actions=False)
@@ -41,6 +45,9 @@ Microsoft=yf.download('MSFT', start='2015-1-2', actions=False)
 Amazon=yf.download('AMZN', start='2018-10-1', actions=False)
 Zoom=yf.download('ZM', actions=False)
 Tesla=yf.download('TSLA', actions=False)
+
+stock_list.extend((Qualcomm,Intel,NYSE,DowJones,JPMorgan,Ford,Google,Boeing,Heinz,Meta,Netflix,Nasdaq,Costco,Uber,Microsoft,Amazon))
+stock_name_list.extend(('qualcomm','intel','nyse','dowjones','JPMorgan','ford','google','boeing','heinz','meta','netflix','nasdaq','costco','uber','microsoft','amazon'))
 
 stocks = {}
 news = []
@@ -66,7 +73,7 @@ def train_send(stock_name, data, n_lags, x):
     array = np.append(array,raw_forecast)
     
     final = (array + 1).cumprod()
-    final_preds = final[-365:]
+    final_preds = final[-260:]
     num_final = final[0]
     num_initial = data['Close'].iloc[0]
     constant = (num_initial/num_final)
@@ -75,36 +82,39 @@ def train_send(stock_name, data, n_lags, x):
     preds = [round(num, 2) for num in preds]
     maximum = preds.index(np.max(preds))
     minimum = preds.index(np.min(preds))
-    
-    today = date.today()
-    current_date = today.strftime("%Y-%m-%d")
-    current = yf.download('AAPL', start=current_date)
-    current = current['Close'].values.tolist()
-    current = current[0]
-    current = math.ceil(current * 100) / 100
+   
+    startdate = datetime.today()
+    enddate = startdate + timedelta(365)
+    bs_days=pd.bdate_range(start=startdate, end=enddate)
+    unix = bs_days.astype(np.int64) // 10**9
+    unix_time = list(unix)
+
     
     stock_dictionary = {
+              "dates": unix_time,
               "preds": preds,
               "max": maximum,
               "min": minimum,
-              "current": current
-          
         }
     
-    stocks[stock_name] = stock_dictionary
-    fig=plt.figure()
-    plt.figure(figsize=(40, 30))
-    plt.plot(final[:len(final)])
-    plt.plot(final[0:len(final)-365])
-    plt.savefig(folder_path + stock_name) #save as png
-         
+    print(len(preds))
+    print(len(unix_time))
+    
+    # stocks[stock_name] = stock_dictionary
+    # print(len(preds))
+    # fig=plt.figure()
+    # plt.figure(figsize=(40, 30))
+    # plt.plot(final[:len(final)])
+    # plt.plot(final[0:len(final)-260])
+    # plt.savefig(folder_path + stock_name) #save as png
+
+# for x in range(len(stock_list)):
+#     train_send(stock_name_list[x],stock_list[x], -1, 0)
+
 train_send("zoom",Zoom, 300, 0)
-train_send("heinz",Heinz, -1, 0)
-train_send("apple",Apple, -1, 0)
-# train_send("tesla",Tesla, 580, 1500)
-train_send("nasdaq",Nasdaq, -1, 0)
-train_send("amazon",Amazon, -1, 0)
+
 #will add more
+# train_send("tesla",Tesla, 580, 1500)
 
 key='image_url'
 
@@ -169,3 +179,10 @@ url = 'https://api.mittaldev.com/stocks-dev/updateStocks'
 
 post = requests.post(url, dataAryanJson)
 print(post)
+
+
+
+
+
+
+
