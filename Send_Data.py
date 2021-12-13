@@ -12,12 +12,16 @@ import dateutil.parser as dp
 import matplotlib.pyplot as plt
 from random import randint
 import pandas as pd
+from dateutil.relativedelta import relativedelta
+from pandas.tseries.holiday import USFederalHolidayCalendar
+from pandas.tseries.offsets import CustomBusinessDay
+
 
 # which folder to send forecast data
 folder_path = r"C:\Users\aryav\Desktop\Github\Stockscast Model\1 year forecast examples/"
 
 #forecast length
-n_days = 260 - 1
+n_days = 261
 
 # set seed for Reproducibility
 random.seed(10)
@@ -52,7 +56,25 @@ stock_name_list.extend(('qualcomm','intel','nyse','dowjones','JPMorgan','ford','
 stocks = {}
 news = []
 
-def train_send(stock_name, data, n_lags, x):
+# find number of buisness days
+today = date.today()
+one_week = date.today() + relativedelta(weeks=+1)
+one_month = date.today() + relativedelta(months=+1)
+three_month = date.today() + relativedelta(months=+3)
+six_month = date.today() + relativedelta(months=+6)
+one_year = date.today() + relativedelta(years=+1)
+
+us_bd = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+one_week_bs = len(pd.date_range(start=today,end=one_week, freq=us_bd))
+one_month_bs = len(pd.date_range(start=today,end=one_month, freq=us_bd))
+three_month_bs =len(pd.date_range(start=today,end=three_month, freq=us_bd))
+six_month_bs = len(pd.date_range(start=today,end=six_month, freq=us_bd))
+one_year_bs = len(pd.date_range(start=today,end=one_year, freq=us_bd))
+
+unix = (pd.date_range(start=today,end=one_year, freq=us_bd)).astype(np.int64) // 10**9
+unix_time = list(unix)
+
+def train_send(stock_name, data, n_lags, x, y):
     
     data.reset_index(inplace=True,drop=False)
     data['Stock_return'] = data['Close'].pct_change()
@@ -73,7 +95,7 @@ def train_send(stock_name, data, n_lags, x):
     array = np.append(array,raw_forecast)
     
     final = (array + 1).cumprod()
-    final_preds = final[-260:]
+    final_preds = final[-261:]
     num_final = final[0]
     num_initial = data['Close'].iloc[0]
     constant = (num_initial/num_final)
@@ -83,50 +105,70 @@ def train_send(stock_name, data, n_lags, x):
     maximum = preds.index(np.max(preds))
     minimum = preds.index(np.min(preds))
    
-    startdate = datetime.today()
-    enddate = startdate + timedelta(365)
-    bs_days=pd.bdate_range(start=startdate, end=enddate)
-    unix = bs_days.astype(np.int64) // 10**9
-    unix_time = list(unix)
-
     
-    stock_dictionary = {
-              "dates": unix_time,
-              "preds": preds,
-              "max": maximum,
-              "min": minimum,
-        }
+    if y < 0:
+        stock_dictionary = {
+                  "dates": unix_time,
+                  "preds": preds,
+                  "max": maximum,
+                  "min": minimum,
+                    "segments": {
+                        'week': int(one_week_bs),
+                        'month': int(one_month_bs),
+                        'quarter': int(three_month_bs),
+                        'half': int(six_month_bs),
+                        'year': int(one_year_bs),
+                            }
+                  }
+        
+    else:
+        stock_dictionary = {
+                "dates": unix_time,
+                "segments": {
+                    'week': int(one_week_bs),
+                    'month': int(one_month_bs),
+                    'quarter': int(three_month_bs),
+                    'half': int(six_month_bs),
+                    'year': int(one_year_bs),
+                        }
+                    }
     
-    print(len(preds))
-    print(len(unix_time))
+    stocks[stock_name] = stock_dictionary
+    fig=plt.figure()
+    plt.figure(figsize=(40, 30))
+    plt.plot(final[:len(final)])
+    plt.plot(final[0:len(final)-261])
+    plt.savefig(folder_path + stock_name) #save as png
     
-    # stocks[stock_name] = stock_dictionary
-    # print(len(preds))
-    # fig=plt.figure()
-    # plt.figure(figsize=(40, 30))
-    # plt.plot(final[:len(final)])
-    # plt.plot(final[0:len(final)-260])
-    # plt.savefig(folder_path + stock_name) #save as png
+ # y -1 for all data. 0 for only dates and bs days. n_lags -1 for 0.3. x 0 for no substraciton after lags.
 
-# for x in range(len(stock_list)):
-#     train_send(stock_name_list[x],stock_list[x], -1, 0)
+# for x in range(len(stock_list)): 
+#     train_send(stock_name_list[x],stock_list[x], -1, 0, -1)
 
-train_send("zoom",Zoom, 300, 0)
+train_send("meta",Meta, -1, 0, -1)
+train_send("nasdaq",Nasdaq, -1, 0, -1)
+train_send("amazon",Amazon, -1, 0, -1)
+train_send("heinz",Heinz, -1, 0, -1)
 
 #will add more
-# train_send("tesla",Tesla, 580, 1500)
+# train_send("tesla",Tesla, 580, 1500, -1)
+train_send("apple",Apple,-1,0,0)
+train_send("zoom",Zoom, 300, 0, -1)
+
 
 key='image_url'
 
 limit = '1000'
-date = str(date.today())
-api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
+# date = str(date.today())
+# api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
+api_url = f'https://api.polygon.io/v2/reference/news?limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
 data = requests.get(api_url).json()
 amount = len(data['results'])
 
 key='image_url'
 z=0
 q=0
+
 
 while z <= amount:
     
@@ -167,6 +209,7 @@ while z <= amount:
 for i in range(25):
     news.append(locals()["news" + str(i)]) 
 
+
 dataAryan = {
     "stocks": stocks,
     "news": news,
@@ -179,10 +222,3 @@ url = 'https://api.mittaldev.com/stocks-dev/updateStocks'
 
 post = requests.post(url, dataAryanJson)
 print(post)
-
-
-
-
-
-
-
