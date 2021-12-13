@@ -46,12 +46,13 @@ Nasdaq=yf.download('^IXIC', start='2015-1-2', actions=False)
 Costco=yf.download('COST',start='2018-1-2', actions=False)
 Uber=yf.download('UBER', actions=False)
 Microsoft=yf.download('MSFT', start='2015-1-2', actions=False)
-Amazon=yf.download('AMZN', start='2018-10-1', actions=False)
+Amazon=yf.download('AMZN', start='2017-10-1', actions=False)
 Zoom=yf.download('ZM', actions=False)
 Tesla=yf.download('TSLA', actions=False)
 
-stock_list.extend((Qualcomm,Intel,NYSE,DowJones,JPMorgan,Ford,Google,Boeing,Heinz,Meta,Netflix,Nasdaq,Costco,Uber,Microsoft,Amazon))
-stock_name_list.extend(('qualcomm','intel','nyse','dowjones','JPMorgan','ford','google','boeing','heinz','meta','netflix','nasdaq','costco','uber','microsoft','amazon'))
+stock_list.extend((Qualcomm,Intel,NYSE,DowJones,JPMorgan,Ford,Google,Boeing,Meta,Netflix,Nasdaq,Costco,Uber,Microsoft,Amazon))
+stock_name_list.extend(('qualcomm','intel','nyse','dow','jpmorgan','ford','google','boeing','meta','netflix','nasdaq','costco','uber','microsoft','amazon'))
+
 
 stocks = {}
 news = []
@@ -142,18 +143,18 @@ def train_send(stock_name, data, n_lags, x, y):
     
  # y -1 for all data. 0 for only dates and bs days. n_lags -1 for 0.3. x 0 for no substraciton after lags.
 
-# for x in range(len(stock_list)): 
-#     train_send(stock_name_list[x],stock_list[x], -1, 0, -1)
+for x in range(len(stock_list)): 
+    train_send(stock_name_list[x],stock_list[x], -1, 0, -1)
 
-train_send("meta",Meta, -1, 0, -1)
-train_send("nasdaq",Nasdaq, -1, 0, -1)
-train_send("amazon",Amazon, -1, 0, -1)
-train_send("heinz",Heinz, -1, 0, -1)
 
 #will add more
 # train_send("tesla",Tesla, 580, 1500, -1)
 train_send("apple",Apple,-1,0,0)
 train_send("zoom",Zoom, 300, 0, -1)
+n_days = 365
+train_send("heinz",Heinz, -1, 0, -1)
+
+
 
 
 key='image_url'
