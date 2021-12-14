@@ -49,9 +49,11 @@ Microsoft=yf.download('MSFT', start='2015-1-2', actions=False)
 Amazon=yf.download('AMZN', start='2017-10-1', actions=False)
 Zoom=yf.download('ZM', actions=False)
 Tesla=yf.download('TSLA', actions=False)
+SMP500=yf.download('^GSPC', start='2020-1-1')
 
-stock_list.extend((Qualcomm,Intel,NYSE,DowJones,JPMorgan,Ford,Google,Boeing,Meta,Netflix,Nasdaq,Costco,Uber,Microsoft,Amazon))
-stock_name_list.extend(('qualcomm','intel','nyse','dow','jpmorgan','ford','google','boeing','meta','netflix','nasdaq','costco','uber','microsoft','amazon'))
+
+stock_list.extend((Qualcomm,Intel,NYSE,DowJones,JPMorgan,Ford,Google,Boeing,Meta,Netflix,Nasdaq,Costco,Uber,Microsoft,Amazon,Tesla,Apple,SMP500))
+stock_name_list.extend(('qualcomm','intel','nyse','dow','jpmorgan','ford','google','boeing','meta','netflix','nasdaq','costco','uber','microsoft','amazon','tesla','apple','sp'))
 
 
 stocks = {}
@@ -148,21 +150,18 @@ for x in range(len(stock_list)):
 
 
 #will add more
-# train_send("tesla",Tesla, 580, 1500, -1)
-train_send("apple",Apple,-1,0,0)
 train_send("zoom",Zoom, 300, 0, -1)
 n_days = 365
 train_send("heinz",Heinz, -1, 0, -1)
 
 
 
-
 key='image_url'
 
 limit = '1000'
-# date = str(date.today())
-# api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
-api_url = f'https://api.polygon.io/v2/reference/news?limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
+date = str(date.today())
+api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
+# api_url = f'https://api.polygon.io/v2/reference/news?limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
 data = requests.get(api_url).json()
 amount = len(data['results'])
 

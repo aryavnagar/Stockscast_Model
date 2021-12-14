@@ -8,7 +8,7 @@ import math
 from datetime import date
 
 #forecast length
-n_days = 365
+n_days = 261
 # set seed for Reproducibility
 random.seed(10)
 
@@ -30,11 +30,11 @@ random.seed(10)
 # data=yf.download('UBER')
 # data=yf.download('MSFT', start='2015-1-2')
 # data=yf.download('AMZN', start='2018-10-1')
-
 # data=yf.download('ZM') lags=300
-# data=yf.download('TSLA') lags=580, len(array)-1500
+# data=yf.download('TSLA')
 # data=yf.download('NVDA', start='2000-1-2')
 # data=yf.download('AMD', start='2000-1-2')
+data=yf.download('^GSPC', start='2020-1-1', actions=False)
 
 #data restructure
 data.reset_index(inplace=True,drop=False)
@@ -63,7 +63,7 @@ len(array)
 # plt.plot(array)
 final = (array + 1).cumprod()
 
-plt.figure(figsize=(200, 180))
+plt.figure(figsize=(40, 30))
 plt.plot(final[:len(final)])
 plt.plot(final[0:len(final)-n_days])
 
