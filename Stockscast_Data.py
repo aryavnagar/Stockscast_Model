@@ -10,6 +10,9 @@ date = str(date.today())
 api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
 data = requests.get(api_url).json()
 
+data
+
+
 for x in range (data['count']):
   id = data['results'][x]['id']
   url = data['results'][x]['article_url']

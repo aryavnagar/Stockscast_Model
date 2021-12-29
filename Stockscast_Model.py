@@ -31,10 +31,10 @@ random.seed(10)
 # data=yf.download('MSFT', start='2015-1-2')
 # data=yf.download('AMZN', start='2018-10-1')
 # data=yf.download('ZM') lags=300
-# data=yf.download('TSLA')
+data=yf.download('TSLA', start='2020-1-1')
 # data=yf.download('NVDA', start='2000-1-2')
 # data=yf.download('AMD', start='2000-1-2')
-data=yf.download('^GSPC', start='2020-1-1', actions=False)
+# data=yf.download('^GSPC', start='2020-1-1', actions=False)
 
 #data restructure
 data.reset_index(inplace=True,drop=False)

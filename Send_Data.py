@@ -48,7 +48,7 @@ Uber=yf.download('UBER', actions=False)
 Microsoft=yf.download('MSFT', start='2015-1-2', actions=False)
 Amazon=yf.download('AMZN', start='2017-10-1', actions=False)
 Zoom=yf.download('ZM', actions=False)
-Tesla=yf.download('TSLA', actions=False)
+Tesla=yf.download('TSLA', start='2020-1-1')
 SMP500=yf.download('^GSPC', start='2020-1-1')
 
 
@@ -158,7 +158,7 @@ train_send("heinz",Heinz, -1, 0, -1)
 
 key='image_url'
 
-limit = '1000'
+limit = '25'
 date = str(date.today())
 api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
 # api_url = f'https://api.polygon.io/v2/reference/news?limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
@@ -169,42 +169,41 @@ key='image_url'
 z=0
 q=0
 
-
 while z <= amount:
     
-    x=randint(0,50)
+    for x in range (data['count']):
 
-    if ((key in data['results'][x]) and (data['results'][x]['publisher']['name'] != 'Zacks Investment Research')):
-              
-       id = data['results'][x]['id']
-       url = data['results'][x]['article_url']
-       title = data['results'][x]['title']
-       publisher = data['results'][x]['publisher']['name']
-       thumbnail = data['results'][x]['image_url']
-       if 'keywords' in data['results'][x]:
-          keywords = data['results'][x]['keywords']
-       else:
-         keywords = []
-       api_publish = data['results'][x]['published_utc']
-       parsed_api_publish = dp.parse(api_publish)
-       parsed_api_publish_in_seconds = parsed_api_publish.timestamp()
-       parsed_api_publish_in_seconds=int(parsed_api_publish_in_seconds)
-       ticker = data['results'][x]['tickers']
-       tickers = [i for n, i in enumerate(ticker) if i not in ticker[:n]]
-       locals()["news" + str(q)] = {
-                                  "id": id,
-                                  "url": url,
-                                  "title": title,
-                                  "publisher": publisher,
-                                  "publishDate": parsed_api_publish_in_seconds,
-                                  "thumbnail": thumbnail,
-                                  "keywords": keywords,
-                                  "tickers": tickers
-                                  }
-       z=z+1
-       q=q+1
-    else:
-        z=z+1
+        if ((key in data['results'][x]) and (data['results'][x]['publisher']['name'] != 'Zacks Investment Research')):
+                  
+           id = data['results'][x]['id']
+           url = data['results'][x]['article_url']
+           title = data['results'][x]['title']
+           publisher = data['results'][x]['publisher']['name']
+           thumbnail = data['results'][x]['image_url']
+           if 'keywords' in data['results'][x]:
+              keywords = data['results'][x]['keywords']
+           else:
+             keywords = []
+           api_publish = data['results'][x]['published_utc']
+           parsed_api_publish = dp.parse(api_publish)
+           parsed_api_publish_in_seconds = parsed_api_publish.timestamp()
+           parsed_api_publish_in_seconds=int(parsed_api_publish_in_seconds)
+           ticker = data['results'][x]['tickers']
+           tickers = [i for n, i in enumerate(ticker) if i not in ticker[:n]]
+           locals()["news" + str(q)] = {
+                                      "id": id,
+                                      "url": url,
+                                      "title": title,
+                                      "publisher": publisher,
+                                      "publishDate": parsed_api_publish_in_seconds,
+                                      "thumbnail": thumbnail,
+                                      "keywords": keywords,
+                                      "tickers": tickers
+                                      }
+           z=z+1
+           q=q+1
+        else:
+            z=z+1
 
 for i in range(25):
     news.append(locals()["news" + str(i)]) 
