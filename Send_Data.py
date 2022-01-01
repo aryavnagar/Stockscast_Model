@@ -59,6 +59,8 @@ stock_name_list.extend(('qualcomm','intel','nyse','dow','jpmorgan','ford','googl
 stocks = {}
 news = []
 
+
+
 # find number of buisness days
 today = date.today()
 one_week = date.today() + relativedelta(weeks=+1)
@@ -158,7 +160,7 @@ train_send("heinz",Heinz, -1, 0, -1)
 
 key='image_url'
 
-limit = '25'
+limit = '100'
 date = str(date.today())
 api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
 # api_url = f'https://api.polygon.io/v2/reference/news?limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
@@ -173,7 +175,7 @@ while z <= amount:
     
     for x in range (data['count']):
 
-        if ((key in data['results'][x]) and (data['results'][x]['publisher']['name'] != 'Zacks Investment Research')):
+        if ((key in data['results'][x]) and (data['results'][x]['publisher']['name'] != 'Zacks Investment Research') and (data['results'][x]['publisher']['name'] != 'GlobeNewswire Inc.')):
                   
            id = data['results'][x]['id']
            url = data['results'][x]['article_url']
@@ -212,12 +214,12 @@ for i in range(25):
 dataAryan = {
     "stocks": stocks,
     "news": news,
-    "pass": "dev-RZZjmCxk9tTuAHnZ"
+    "pass": "prod-Qu2nx8fTw4ke7D7x"
 }
 
 
 dataAryanJson = json.dumps(dataAryan)
-url = 'https://api.mittaldev.com/stocks-dev/updateStocks'
+url = 'https://api.mittaldev.com/stocks/updateStocks'
 
 post = requests.post(url, dataAryanJson)
 print(post)
