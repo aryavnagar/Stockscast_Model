@@ -160,7 +160,7 @@ train_send("heinz",Heinz, -1, 0, -1)
 
 key='image_url'
 
-limit = '100'
+limit = '1000'
 date = str(date.today())
 api_url = f'https://api.polygon.io/v2/reference/news?published_utc={date}&limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
 # api_url = f'https://api.polygon.io/v2/reference/news?limit={limit}&apiKey=BpYLj3XDxfQZfCGlB3OiySFQTzWPBIvK'
