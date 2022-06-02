@@ -15,10 +15,12 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from pandas.tseries.offsets import CustomBusinessDay
+import os
 
 
 # which folder to send forecast data
-folder_path = r"C:\Users\aryav\Desktop\Github\Stockscast Model\1 year forecast examples/"
+folder_path = r"D:\Github\Stockscast Model\1 year forecast examples"
+
 
 #forecast length
 n_days = 261
@@ -143,7 +145,7 @@ def train_send(stock_name, data, n_lags, x, y):
     plt.figure(figsize=(40, 30))
     plt.plot(final[:len(final)])
     plt.plot(final[0:len(final)-261])
-    plt.savefig(folder_path + stock_name) #save as png
+    plt.savefig(os.path.join(folder_path, stock_name)) #save as png
     
  # y -1 for all data. 0 for only dates and bs days. n_lags -1 for 0.3. x 0 for no substraciton after lags.
 
@@ -221,5 +223,8 @@ dataAryan = {
 dataAryanJson = json.dumps(dataAryan)
 url = 'https://api.mittaldev.com/stocks/updateStocks'
 
-post = requests.post(url, dataAryanJson)
+print(dataAryanJson)
+
+headers = {'Content-type': 'application/json'}
+post = requests.post(url, dataAryanJson, headers=headers)
 print(post)
